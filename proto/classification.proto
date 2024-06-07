@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "github.com/ary82/balance/internal/classification";
+package proto;
+
+service ClassifyService {
+  rpc Classify (ClassifyRequest) returns (ClassifyResponse);
+}
+
+message ClassifyRequest {
+  string query = 1;
+}
+
+message ClassifyResponse {
+  string result = 1;
+  float percentage = 2;
+}

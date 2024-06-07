@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/gofiber/fiber/v2"
 
-	"balance/internal/database"
+	"github.com/ary82/balance/internal/database"
 )
 
 type FiberServer struct {

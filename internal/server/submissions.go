@@ -1,7 +1,7 @@
 package server
 
 import (
-	"balance/internal/database"
+	"github.com/ary82/balance/internal/database"
 
 	"github.com/gofiber/fiber/v2"
 )

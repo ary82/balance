@@ -1,7 +1,7 @@
 package main
 
 import (
-	"balance/internal/server"
+	"github.com/ary82/balance/internal/server"
 	"fmt"
 	"os"
 	"strconv"

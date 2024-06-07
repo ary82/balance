@@ -9,3 +9,4 @@ main
 
 # py virtual env
 *.venv
+*__pycache__
