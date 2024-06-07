@@ -5,18 +5,10 @@ import (
 )
 
 func (s *FiberServer) RegisterFiberRoutes() {
-	s.App.Get("/", s.HelloWorldHandler)
-
 	s.App.Get("/health", s.healthHandler)
-
-}
-
-func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {
-	resp := fiber.Map{
-		"message": "Hello World",
-	}
-
-	return c.JSON(resp)
+	s.App.Get("/sse", s.sse)
+	s.App.Post("/submission", s.postHandler)
+	s.App.Get("/submission", s.getRandomHandler)
 }
 
 func (s *FiberServer) healthHandler(c *fiber.Ctx) error {

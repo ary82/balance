@@ -8,21 +8,20 @@ import (
 	"os"
 	"time"
 
-	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 type Service interface {
 	Health() map[string]string
+	PostSubmission(post *SubmissionReq) error
+	GetRandom(submissionType int) (*Submission, error)
 }
 
 type service struct {
 	db *sql.DB
 }
 
-var (
-	dburl = os.Getenv("DB_URL")
-)
+var dburl = os.Getenv("DB_URL")
 
 func New() Service {
 	db, err := sql.Open("sqlite3", dburl)
