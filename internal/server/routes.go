@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/ary82/balance/internal/classification"
 	"github.com/gofiber/fiber/v2"
@@ -36,7 +37,12 @@ func (s *FiberServer) temp(c *fiber.Ctx) error {
 	serviceClient := classification.NewClassifyServiceClient(client)
 
 	req := classification.ClassifyRequest{
-		Query: "It's an amazing day",
+		Query: []string{
+			"It's an amazing day",
+      "Hope you have the worst day",
+      "You're special to everyone",
+      "Your programming skills are weak",
+		},
 	}
 	res, err := serviceClient.Classify(context.Background(), &req)
 	if err != nil {
@@ -46,7 +52,16 @@ func (s *FiberServer) temp(c *fiber.Ctx) error {
 		})
 	}
 
+	arr := []int{}
+	err = json.Unmarshal([]byte(res.Result), &arr)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "in Unmarshal",
+			"error":   err.Error(),
+		})
+	}
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"res": res,
+		"res": arr,
 	})
 }

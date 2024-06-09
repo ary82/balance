@@ -1,27 +1,44 @@
-from transformers import pipeline
-from dotenv import load_dotenv
-import os
 import grpc
+import os
+import concurrent
+from dotenv import load_dotenv
+import google.generativeai as genai
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
 import classification_pb2_grpc
 import classification_pb2
-import concurrent
 
+# Load envs in dev mode
 mode = os.getenv("MODE")
 if mode != "prod":
-    load_dotenv()
+    load_dotenv("../.env")
 
-pipe = pipeline(
-    "text-classification",
-    model="distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+# Configure Gemini
+GOOGLE_API_KEY = os.getenv("GEMINI_KEY")
+genai.configure(api_key=GOOGLE_API_KEY)
+model = genai.GenerativeModel(
+    "gemini-1.5-flash", generation_config={"response_mime_type": "application/json"}
 )
 
 
 class ClassifyServicer(classification_pb2_grpc.ClassifyServiceServicer):
     def Classify(request: classification_pb2.ClassifyRequest, context):
-        result = pipe(request.query)
-        return classification_pb2.ClassifyResponse(
-            result=result[0]["label"], percentage=result[0]["score"]
+        prompt = os.getenv("PROMPT")
+        for value in request.query:
+            prompt = prompt + value + "\n"
+
+        response = model.generate_content(
+            prompt,
+            safety_settings={
+                HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+            },
         )
+        print(response)
+
+        cleaned = response.text.strip()
+        return classification_pb2.ClassifyResponse(result=cleaned)
 
 
 def serve():

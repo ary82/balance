@@ -8,10 +8,9 @@ service ClassifyService {
 }
 
 message ClassifyRequest {
-  string query = 1;
+  repeated string query = 1;
 }
 
 message ClassifyResponse {
   string result = 1;
-  float percentage = 2;
 }
