@@ -1,22 +1,31 @@
 package main
 
 import (
-	"github.com/ary82/balance/internal/server"
 	"fmt"
+	"log"
 	"os"
-	"strconv"
+
+	"github.com/ary82/balance/internal/infra"
 
 	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
+	classifyServerAddr := os.Getenv("CLASSIFY_SERVER_ADDR")
+	_ = classifyServerAddr
 
-	server := server.New()
+	port := os.Getenv("PORT")
+	dburl := os.Getenv("DB_URL")
 
-	server.RegisterFiberRoutes()
-	port, _ := strconv.Atoi(os.Getenv("PORT"))
-	err := server.Listen(fmt.Sprintf(":%d", port))
+	db, err := infra.NewSQLDB(dburl)
 	if err != nil {
-		panic(fmt.Sprintf("cannot start server: %s", err))
+		log.Fatal(err)
+	}
+
+	server := infra.NewFiberServer(db)
+
+	err = server.Listen(fmt.Sprintf(":%v", port))
+	if err != nil {
+		log.Fatal(err)
 	}
 }
