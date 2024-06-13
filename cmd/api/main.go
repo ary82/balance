@@ -12,12 +12,19 @@ import (
 
 func main() {
 	classifyServerAddr := os.Getenv("CLASSIFY_SERVER_ADDR")
-	_ = classifyServerAddr
-
 	port := os.Getenv("PORT")
 	dburl := os.Getenv("DB_URL")
 
 	db, err := infra.NewSQLDB(dburl)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cron, err := infra.NewCron(db, classifyServerAddr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = cron.Start()
 	if err != nil {
 		log.Fatal(err)
 	}
