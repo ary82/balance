@@ -20,9 +20,14 @@ func NewPostHandler(postRouter fiber.Router, messageCh chan string, postService 
 		sseCh:       messageCh,
 	}
 
+	postRouter.Get("/test", handler.test)
 	postRouter.Get("/sse", handler.sse)
 	postRouter.Get("/:type", handler.getRandomPost)
 	postRouter.Post("/", handler.postPost)
+}
+
+func (h *PostHandler) test(ctx *fiber.Ctx) error {
+	return ctx.Render("index", 0)
 }
 
 func (h *PostHandler) getRandomPost(ctx *fiber.Ctx) error {
