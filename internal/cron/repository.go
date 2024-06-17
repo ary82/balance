@@ -48,17 +48,32 @@ func (r *cronSQLRepository) SelectPosts(post_type int) ([]*post.Post, error) {
 	return posts, nil
 }
 
-const q = "update submissions set type = $%v where id = $%v;"
 
 func (r *cronSQLRepository) UpdateTypesInPosts(posts []*post.Post) error {
 	query := ""
 	queryArgs := []interface{}{}
 	for i, v := range posts {
-		query = query + fmt.Sprintf(q, 2*i, 2*i+1)
+		query = query + fmt.Sprintf(UPDATE_TYPES_QUERY, 2*i, 2*i+1)
 		queryArgs = append(queryArgs, v.Type)
 		queryArgs = append(queryArgs, v.ID)
 	}
 
 	_, err := r.db.Exec(query, queryArgs...)
 	return err
+}
+
+func (r *cronSQLRepository) SelectRandomPost(postType int) (*post.Post, error) {
+	post := new(post.Post)
+
+	err := r.db.QueryRow(SELECT_RANDOM_POST_QUERY, postType).Scan(
+		&post.ID,
+		&post.Body,
+		&post.Author,
+		&post.Type,
+		&post.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return post, nil
 }

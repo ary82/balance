@@ -15,12 +15,18 @@ import (
 type cronService struct {
 	cronRepository  CronRepository
 	classifyService classification.ClassifyServiceClient
+	sseCh           chan string
 }
 
-func NewCronService(cronRepo CronRepository, classifyService classification.ClassifyServiceClient) CronService {
+func NewCronService(
+	cronRepo CronRepository,
+	classifyService classification.ClassifyServiceClient,
+	sseCh chan string,
+) CronService {
 	return &cronService{
 		cronRepository:  cronRepo,
 		classifyService: classifyService,
+		sseCh:           sseCh,
 	}
 }
 
@@ -32,7 +38,16 @@ func (s *cronService) Start() error {
 
 	_, err = scheduler.NewJob(
 		gocron.DurationJob(10*time.Second),
-		gocron.NewTask(s.job),
+		gocron.NewTask(s.classifyJob),
+		gocron.WithSingletonMode(gocron.LimitModeReschedule),
+	)
+	if err != nil {
+		return err
+	}
+
+	_, err = scheduler.NewJob(
+		gocron.DurationJob(5*time.Second),
+		gocron.NewTask(s.sseJob),
 		gocron.WithSingletonMode(gocron.LimitModeReschedule),
 	)
 	if err != nil {
@@ -43,7 +58,7 @@ func (s *cronService) Start() error {
 	return nil
 }
 
-func (s *cronService) job() {
+func (s *cronService) classifyJob() {
 	start := time.Now()
 	posts, err := s.cronRepository.SelectPosts(post.POST_MAPPING_NOT_ANALYSED)
 	if err != nil {
@@ -99,4 +114,21 @@ func (s *cronService) job() {
 		return
 	}
 	log.Println("completed, TOOK:", time.Since(start))
+}
+
+func (s *cronService) sseJob() {
+	goodPost, err := s.cronRepository.SelectRandomPost(post.POST_MAPPING_POSITIVE)
+	if err != nil {
+		log.Println("err:", err)
+		return
+	}
+	badPost, err := s.cronRepository.SelectRandomPost(post.POST_MAPPING_NEGATIVE)
+	if err != nil {
+		log.Println("err:", err)
+		return
+	}
+
+	body := strings.Join([]string{goodPost.Body, badPost.Body}, "___")
+	s.sseCh <- body
+	log.Println("sent to Ch:", body)
 }

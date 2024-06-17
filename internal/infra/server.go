@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
-func NewFiberServer(db *sql.DB) *fiber.App {
+func NewFiberServer(db *sql.DB, sseCh chan string) *fiber.App {
 	app := fiber.New(fiber.Config{
 		AppName:      "Balance",
 		ServerHeader: "Fiber",
@@ -23,7 +23,7 @@ func NewFiberServer(db *sql.DB) *fiber.App {
 	postRepo := post.NewPostRepository(db)
 	postservice := post.CreatePostService(postRepo)
 
-	post.NewPostHandler(app.Group("/post"), postservice)
+	post.NewPostHandler(app.Group("/post"), sseCh, postservice)
 
 	return app
 }

@@ -11,11 +11,13 @@ import (
 
 type PostHandler struct {
 	postService PostService
+	sseCh       chan string
 }
 
-func NewPostHandler(postRouter fiber.Router, postService PostService) {
+func NewPostHandler(postRouter fiber.Router, messageCh chan string, postService PostService) {
 	handler := &PostHandler{
 		postService: postService,
+		sseCh:       messageCh,
 	}
 
 	postRouter.Get("/sse", handler.sse)
@@ -71,9 +73,6 @@ func (h *PostHandler) postPost(ctx *fiber.Ctx) error {
 }
 
 func (h *PostHandler) sse(c *fiber.Ctx) error {
-	c.Set("Access-Control-Allow-Origin", "*")
-	c.Set("Access-Control-Expose-Headers", "Content-Type")
-
 	c.Set("Content-Type", "text/event-stream")
 	c.Set("Cache-Control", "no-cache")
 	c.Set("Connection", "keep-alive")
@@ -82,8 +81,7 @@ func (h *PostHandler) sse(c *fiber.Ctx) error {
 		fasthttp.StreamWriter(func(w *bufio.Writer) {
 			fmt.Println("WRITER")
 
-			for i := 0; i < 10; i++ {
-				msg := fmt.Sprintf("%d", i)
+			for msg := range h.sseCh {
 				fmt.Fprintf(w, "data: Message: %s\n\n", msg)
 				fmt.Println(msg)
 

@@ -9,7 +9,11 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func NewCron(db *sql.DB, classifyServerAddr string) (cron.CronService, error) {
+func NewCron(
+	db *sql.DB,
+	classifyServerAddr string,
+	sseCh chan string,
+) (cron.CronService, error) {
 	repo := cron.NewCronRepository(db)
 
 	opts := []grpc.DialOption{
@@ -25,6 +29,6 @@ func NewCron(db *sql.DB, classifyServerAddr string) (cron.CronService, error) {
 
 	classifyService := classification.NewClassifyServiceClient(client)
 
-	service := cron.NewCronService(repo, classifyService)
+	service := cron.NewCronService(repo, classifyService, sseCh)
 	return service, nil
 }
