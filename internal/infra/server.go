@@ -4,14 +4,12 @@ import (
 	"database/sql"
 
 	"github.com/ary82/balance/internal/post"
+	"github.com/ary82/balance/internal/server"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/compress"
-	"github.com/gofiber/fiber/v2/middleware/favicon"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"
 )
 
-func NewFiberServer(db *sql.DB, sseCh chan string) *fiber.App {
+func NewFiberServer(db *sql.DB) *server.FiberServer {
 	// Initialize standard Go html template engine
 	engine := html.New("./templates", ".html")
 
@@ -21,14 +19,9 @@ func NewFiberServer(db *sql.DB, sseCh chan string) *fiber.App {
 		Views:        engine,
 	})
 
-	app.Use(logger.New())
-	app.Use(compress.New())
-	app.Use(favicon.New())
-
 	postRepo := post.NewPostRepository(db)
 	postservice := post.CreatePostService(postRepo)
 
-	post.NewPostHandler(app.Group("/post"), sseCh, postservice)
-
-	return app
+	server := server.CreateFiberServer(app, postservice)
+	return server
 }

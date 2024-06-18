@@ -2,6 +2,7 @@ package post
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -29,6 +30,15 @@ func (s *postService) CreatePost(post *Post) error {
 	}
 	if len(post.Author) < AUTHOR_MIN_LENGTH {
 		return fmt.Errorf("author name too short")
+	}
+
+	if !strings.ContainsAny(post.Body, ALLOWED_CHARS) {
+		idx := strings.IndexAny(post.Body, ALLOWED_CHARS)
+		return fmt.Errorf("body contains invalid characters at index: %d", idx)
+	}
+	if !strings.ContainsAny(post.Author, ALLOWED_CHARS) {
+		idx := strings.IndexAny(post.Body, ALLOWED_CHARS)
+		return fmt.Errorf("author contains invalid characters at index: %d", idx)
 	}
 
 	post.ID = uuid.New()

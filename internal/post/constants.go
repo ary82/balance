@@ -21,3 +21,5 @@ const (
 	INSERT_POST_QUERY        string = "INSERT INTO submissions(id, body, author, type, created_at) VALUES($1, $2, $3, $4, $5)"
 	SELECT_RANDOM_POST_QUERY string = "SELECT id, body, author, type, created_at FROM submissions WHERE type = $1 ORDER BY RANDOM() LIMIT 1"
 )
+
+const ALLOWED_CHARS string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.'-_ "

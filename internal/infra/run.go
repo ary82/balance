@@ -2,6 +2,8 @@ package infra
 
 import (
 	"fmt"
+
+	"github.com/ary82/balance/internal/post"
 )
 
 func Run(
@@ -14,20 +16,29 @@ func Run(
 		return err
 	}
 
-	sseCh := make(chan string)
+	posSseCh := make(chan post.Post)
+	negSseCh := make(chan post.Post)
 
-	cron, err := NewCron(db, classifyServerAddr, sseCh)
+	cron, err := NewCron(db, classifyServerAddr, posSseCh, negSseCh)
 	if err != nil {
 		return err
 	}
 
-	server := NewFiberServer(db, sseCh)
+	server := NewFiberServer(db)
+	go readCh(posSseCh, server.CurrentPositivePosts)
+	go readCh(negSseCh, server.CurrentNegativePosts)
 
 	err = cron.Start()
 	if err != nil {
 		return err
 	}
 
-	err = server.Listen(fmt.Sprintf(":%v", port))
+	err = server.App.Listen(fmt.Sprintf(":%v", port))
 	return err
+}
+
+func readCh(sseCh chan post.Post, post *post.Post) {
+	for {
+		*post = (<-sseCh)
+	}
 }

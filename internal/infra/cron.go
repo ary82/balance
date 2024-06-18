@@ -5,6 +5,7 @@ import (
 
 	"github.com/ary82/balance/internal/classification"
 	"github.com/ary82/balance/internal/cron"
+	"github.com/ary82/balance/internal/post"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -12,7 +13,8 @@ import (
 func NewCron(
 	db *sql.DB,
 	classifyServerAddr string,
-	sseCh chan string,
+	posSseCh chan post.Post,
+	negSseCh chan post.Post,
 ) (cron.CronService, error) {
 	repo := cron.NewCronRepository(db)
 
@@ -29,6 +31,6 @@ func NewCron(
 
 	classifyService := classification.NewClassifyServiceClient(client)
 
-	service := cron.NewCronService(repo, classifyService, sseCh)
+	service := cron.NewCronService(repo, classifyService, posSseCh, negSseCh)
 	return service, nil
 }

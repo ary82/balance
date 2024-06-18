@@ -15,18 +15,21 @@ import (
 type cronService struct {
 	cronRepository  CronRepository
 	classifyService classification.ClassifyServiceClient
-	sseCh           chan string
+	positiveSseCh   chan post.Post
+	negativeSseCh   chan post.Post
 }
 
 func NewCronService(
 	cronRepo CronRepository,
 	classifyService classification.ClassifyServiceClient,
-	sseCh chan string,
+	positiveSseCh chan post.Post,
+	negativeSseCh chan post.Post,
 ) CronService {
 	return &cronService{
 		cronRepository:  cronRepo,
 		classifyService: classifyService,
-		sseCh:           sseCh,
+		positiveSseCh:   positiveSseCh,
+		negativeSseCh:   negativeSseCh,
 	}
 }
 
@@ -37,7 +40,7 @@ func (s *cronService) Start() error {
 	}
 
 	_, err = scheduler.NewJob(
-		gocron.DurationJob(10*time.Second),
+		gocron.DurationJob(15*time.Second),
 		gocron.NewTask(s.classifyJob),
 		gocron.WithSingletonMode(gocron.LimitModeReschedule),
 	)
@@ -46,7 +49,7 @@ func (s *cronService) Start() error {
 	}
 
 	_, err = scheduler.NewJob(
-		gocron.DurationJob(5*time.Second),
+		gocron.DurationJob(10*time.Second),
 		gocron.NewTask(s.sseJob),
 		gocron.WithSingletonMode(gocron.LimitModeReschedule),
 	)
@@ -128,7 +131,8 @@ func (s *cronService) sseJob() {
 		return
 	}
 
-	body := strings.Join([]string{goodPost.Body, badPost.Body}, "___")
-	s.sseCh <- body
-	log.Println("sent to Ch:", body)
+	s.positiveSseCh <- *goodPost
+	s.negativeSseCh <- *badPost
+
+	log.Println("sent to Ch")
 }
