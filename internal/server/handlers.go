@@ -59,17 +59,15 @@ func (s *FiberServer) submitPost(ctx *fiber.Ctx) error {
 
 	err := s.postService.CreatePost(post)
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"success": false,
-			"error":   err.Error(),
-		})
+		return ctx.Status(fiber.StatusOK).Render(
+			"form_error", fiber.Map{
+				"error": err.Error(),
+			},
+		)
 	}
-
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"success": true,
-	})
+	return ctx.Status(fiber.StatusOK).Render("form", nil)
 }
 
 func (s *FiberServer) index(ctx *fiber.Ctx) error {
-	return ctx.Render("index", nil)
+	return ctx.Status(fiber.StatusOK).Render("index", nil)
 }

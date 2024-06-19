@@ -49,7 +49,7 @@ func (s *cronService) Start() error {
 	}
 
 	_, err = scheduler.NewJob(
-		gocron.DurationJob(10*time.Second),
+		gocron.DurationJob(15*time.Second),
 		gocron.NewTask(s.sseJob),
 		gocron.WithSingletonMode(gocron.LimitModeReschedule),
 	)

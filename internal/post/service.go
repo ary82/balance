@@ -32,17 +32,19 @@ func (s *postService) CreatePost(post *Post) error {
 		return fmt.Errorf("author name too short")
 	}
 
-	if !strings.ContainsAny(post.Body, ALLOWED_CHARS) {
-		idx := strings.IndexAny(post.Body, ALLOWED_CHARS)
-		return fmt.Errorf("body contains invalid characters at index: %d", idx)
+	for i, v := range post.Body {
+		if !strings.ContainsRune(ALLOWED_CHARS, v) {
+			return fmt.Errorf("body contains invalid characters at index: %d", i)
+		}
 	}
-	if !strings.ContainsAny(post.Author, ALLOWED_CHARS) {
-		idx := strings.IndexAny(post.Body, ALLOWED_CHARS)
-		return fmt.Errorf("author contains invalid characters at index: %d", idx)
+	for i, v := range post.Author {
+		if !strings.ContainsRune(ALLOWED_CHARS, v) {
+			return fmt.Errorf("author contains invalid characters at index: %d", i)
+		}
 	}
 
 	post.ID = uuid.New()
-	post.CreatedAt = time.Now()
+	post.CreatedAt = time.Now().UTC()
 	post.Type = POST_MAPPING_NOT_ANALYSED
 
 	err := s.postRepository.InsertPost(post)
