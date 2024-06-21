@@ -11,7 +11,7 @@ import (
 
 func NewFiberServer(db *sql.DB) *server.FiberServer {
 	// Initialize standard Go html template engine
-	engine := html.New("./templates", ".html")
+	engine := html.New("./static", ".html")
 
 	app := fiber.New(fiber.Config{
 		AppName:      "Balance",

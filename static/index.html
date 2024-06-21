@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>balance</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="/htmx.min.js"></script>
+  <script src="/sse.min.js"></script>
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="stylesheet" href="/main.css" />
+</head>
+
+<div class="navbar bg-base-100 gap-4">
+  <a class="btn btn-ghost text-xl" href="/">balance</a>
+  <h1 class="p-2 font-extrabold text-base-content text-2xl">
+    Submit an affirmation or insult!
+  </h1>
+</div>
+<div class="hero min-h-[90vh] place-items-stretch">
+  <div class="justify-self-center z-10">
+    <form class="p-2 m-2 gap-2 bg-base-300 rounded-md flex flex-col w-80 justify-self-center" id="post" hx-post="/">
+      <textarea class="textarea textarea-bordered" placeholder="type your sentence(s) here" name="body"></textarea>
+      <input type="text" placeholder="your name here" class="input input-bordered" name="author" />
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+  </div>
+  <div class="flex justify-stretch items-stretch gap-1" hx-ext="sse" sse-connect="/sse">
+    <div class="bg-success basis-1 grow text-success-content flex flex-col justify-center items-center gap-1">
+      <div class="text-3xl font-extrabold px-4" sse-swap="positive_body"></div>
+      <div class="font-bold" sse-swap="positive_author"></div>
+    </div>
+    <div class="bg-error basis-1 grow text-error-content flex flex-col justify-center items-center gap-1">
+      <div class="text-3xl font-extrabold px-4" sse-swap="negative_body"></div>
+      <div class="font-bold" sse-swap="negative_author"></div>
+    </div>
+  </div>
+</div>
+
+{{template "footer"}}
+
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "balance",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tailwind": "tailwindcss -i ./static/styles/input.css -o ./static/styles/output.css --watch",
+    "tailwind-build": "tailwindcss -o ./static/styles/output.css --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.4.19",
+    "daisyui": "^4.12.2",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
+    "uglify-js": "^3.18.0"
+  }
+}

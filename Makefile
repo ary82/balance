@@ -1,20 +1,19 @@
 all: build
 
 build:
-	@echo "Building..."
+	@echo "Building go binary..."
 	@go build -o main cmd/api/main.go
+	@echo "Building tailwind css..."
+	@pnpm run tailwind-build
 
 run: build
 	@echo "Running..."
-	@go run cmd/api/main.go
-
-test:
-	@echo "Testing..."
-	@go test -v ./...
+	@./main
 
 clean:
 	@echo "Cleaning Go server..."
 	@rm -f main
+	@rm -f ./static/styles/output.css
 	@echo "Cleaning Python server..."
 	@rm -rf ./classification/__pycache__
 	@rm -rf ./classification/.venv
@@ -36,4 +35,4 @@ py-server:
 watch:
 	@${HOME}/go/bin/air
 
-.PHONY: all build run test clean py-server
+.PHONY: all build run clean py-server
