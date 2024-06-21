@@ -1,0 +1,14 @@
+tmp
+.env
+
+main
+
+*.db
+
+# py virtual env
+*.venv
+*__pycache__
+
+# templates/js stuff
+node_modules
+static/styles/output.css

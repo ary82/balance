@@ -18,8 +18,6 @@ func (s *FiberServer) sse(c *fiber.Ctx) error {
 
 	c.Status(fiber.StatusOK).Context().SetBodyStreamWriter(
 		fasthttp.StreamWriter(func(w *bufio.Writer) {
-			fmt.Println("WRITER")
-
 			for {
 				posMsg := html.EscapeString(s.CurrentPositivePosts.Body)
 				posAuthor := html.EscapeString(s.CurrentPositivePosts.Author)

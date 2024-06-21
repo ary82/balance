@@ -81,7 +81,6 @@ func (s *cronService) classifyJob() {
 		strSlice = append(strSlice, cleanBody)
 	}
 
-	log.Println("grpc req:", strSlice)
 	res, err := s.classifyService.Classify(
 		context.Background(),
 		&classification.ClassifyRequest{
@@ -92,7 +91,6 @@ func (s *cronService) classifyJob() {
 		log.Println("err:", err)
 		return
 	}
-	log.Println("grpc res:", res.Result)
 
 	resSlice := []int{}
 	err = json.Unmarshal([]byte(res.Result), &resSlice)
@@ -100,7 +98,6 @@ func (s *cronService) classifyJob() {
 		log.Println("err:", err)
 		return
 	}
-	log.Println("unmarshalled res:", resSlice)
 
 	if len(posts) != len(resSlice) {
 		log.Println("err:", "len mismatch in grpc classify")
@@ -133,6 +130,4 @@ func (s *cronService) sseJob() {
 
 	s.positiveSseCh <- *goodPost
 	s.negativeSseCh <- *badPost
-
-	log.Println("sent to Ch")
 }
