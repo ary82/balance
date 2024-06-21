@@ -7,11 +7,12 @@ import (
 	"log"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"
+	// _ "github.com/mattn/go-sqlite3"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 func NewSQLDB(dburl string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", dburl)
+	db, err := sql.Open("pgx", dburl)
 	if err != nil {
 		return nil, err
 	}

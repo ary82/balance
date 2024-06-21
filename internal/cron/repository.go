@@ -2,7 +2,6 @@ package cron
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/ary82/balance/internal/post"
 )
@@ -48,18 +47,18 @@ func (r *cronSQLRepository) SelectPosts(post_type int) ([]*post.Post, error) {
 	return posts, nil
 }
 
-
 func (r *cronSQLRepository) UpdateTypesInPosts(posts []*post.Post) error {
-	query := ""
-	queryArgs := []interface{}{}
-	for i, v := range posts {
-		query = query + fmt.Sprintf(UPDATE_TYPES_QUERY, 2*i, 2*i+1)
-		queryArgs = append(queryArgs, v.Type)
-		queryArgs = append(queryArgs, v.ID)
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
 	}
-
-	_, err := r.db.Exec(query, queryArgs...)
-	return err
+	for _, v := range posts {
+		_, err = tx.Exec(UPDATE_QUERY, v.Type, v.ID)
+		if err != nil {
+			return err
+		}
+	}
+	return tx.Commit()
 }
 
 func (r *cronSQLRepository) SelectRandomPost(postType int) (*post.Post, error) {
