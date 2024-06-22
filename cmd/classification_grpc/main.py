@@ -7,6 +7,7 @@ from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
 
 import sys
+
 sys.path.append("./proto")
 import classification_pb2_grpc
 import classification_pb2
@@ -15,6 +16,9 @@ import classification_pb2
 mode = os.getenv("MODE")
 if mode != "prod":
     load_dotenv("../.env")
+
+port = os.getenv("PORT")
+addr = "[::]:" + port
 
 # Configure Gemini
 GOOGLE_API_KEY = os.getenv("GEMINI_KEY")
@@ -39,7 +43,6 @@ class ClassifyServicer(classification_pb2_grpc.ClassifyServiceServicer):
                 HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
             },
         )
-        print(response)
 
         cleaned = response.text.strip()
         return classification_pb2.ClassifyResponse(result=cleaned)
@@ -50,9 +53,9 @@ def serve():
     classification_pb2_grpc.add_ClassifyServiceServicer_to_server(
         ClassifyServicer, server
     )
-    server.add_insecure_port("[::]:8000")
+    server.add_insecure_port(addr)
     server.start()
-    print("started")
+    print("started on address:", addr)
     server.wait_for_termination()
 
 
