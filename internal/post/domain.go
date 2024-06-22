@@ -13,7 +13,6 @@ type PostRepository interface {
 
 type PostService interface {
 	CreatePost(post *Post) error
-	GetRandomPost(postType int) (*Post, error)
 }
 
 type Post struct {

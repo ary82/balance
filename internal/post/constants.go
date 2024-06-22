@@ -23,3 +23,5 @@ const (
 )
 
 const ALLOWED_CHARS string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.'-_ !"
+
+const SQLSTATE_ERR_NOT_UNIQUE string = "23505"

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/ary82/balance/internal/classification";
+option go_package = "github.com/ary82/balance/proto";
 package proto;
 
 service ClassifyService {

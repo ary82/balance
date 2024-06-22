@@ -4,6 +4,10 @@ import concurrent
 from dotenv import load_dotenv
 import google.generativeai as genai
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
+
+
+import sys
+sys.path.append("./proto")
 import classification_pb2_grpc
 import classification_pb2
 

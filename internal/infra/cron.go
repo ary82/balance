@@ -3,7 +3,7 @@ package infra
 import (
 	"database/sql"
 
-	"github.com/ary82/balance/internal/classification"
+	"github.com/ary82/balance/proto"
 	"github.com/ary82/balance/internal/cron"
 	"github.com/ary82/balance/internal/post"
 	"google.golang.org/grpc"
@@ -29,7 +29,7 @@ func NewCron(
 		return nil, err
 	}
 
-	classifyService := classification.NewClassifyServiceClient(client)
+	classifyService := proto.NewClassifyServiceClient(client)
 
 	service := cron.NewCronService(repo, classifyService, posSseCh, negSseCh)
 	return service, nil

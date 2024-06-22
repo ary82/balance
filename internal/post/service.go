@@ -18,6 +18,10 @@ func CreatePostService(repo PostRepository) PostService {
 	}
 }
 
+type checker interface {
+	SQLState() string
+}
+
 func (s *postService) CreatePost(post *Post) error {
 	if len(post.Body) > BODY_MAX_LENGTH {
 		return fmt.Errorf("post too long")
@@ -48,16 +52,15 @@ func (s *postService) CreatePost(post *Post) error {
 	post.Type = POST_MAPPING_NOT_ANALYSED
 
 	err := s.postRepository.InsertPost(post)
-	return err
-}
-
-func (s *postService) GetRandomPost(postType int) (*Post, error) {
-	if postType != POST_MAPPING_POSITIVE && postType != POST_MAPPING_NEGATIVE {
-		return nil, fmt.Errorf("invalid postType")
-	}
-	post, err := s.postRepository.SelectRandomPost(postType)
 	if err != nil {
-		return nil, err
+		pe, ok := err.(checker)
+		if !ok {
+			return fmt.Errorf("server error")
+		}
+		s := pe.SQLState()
+		if s == SQLSTATE_ERR_NOT_UNIQUE {
+			return fmt.Errorf("not a unique post. try changing your post body or name")
+		}
 	}
-	return post, nil
+	return err
 }

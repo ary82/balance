@@ -1,26 +1,25 @@
 all: build
 
 build:
-	@echo "Building go binary..."
-	@go build -o main cmd/api/main.go
-	@echo "Building tailwind css..."
+	@echo "building go binary..."
+	@go build -o main cmd/app/main.go
+	@echo "building tailwind css..."
 	@pnpm run tailwind-build
 
 run: build
-	@echo "Running..."
+	@echo "running..."
 	@./main
 
 clean:
-	@echo "Cleaning Go server..."
+	@echo "cleaning Go server..."
 	@rm -f main
 	@rm -f ./static/styles/output.css
-	@echo "Cleaning Python server..."
-	@rm -rf ./classification/__pycache__
-	@rm -rf ./classification/.venv
+	@echo "cleaning Python server..."
+	@rm -rf ./proto/__pycache__
+	@rm -rf ./.venv
 
 py-server:
 	@( \
-		 cd ./classification; \
 		 echo "making python venv"; \
 		 python -m venv .venv; \
 		 echo "sourcing python venv"; \
@@ -28,7 +27,7 @@ py-server:
 		 echo "downloading dependencies"; \
 		 pip install -r ./requirements.txt; \
 		 echo "starting py-server"; \
-		 python ./main.py; \
+		 python ./cmd/classification_grpc/main.py; \
 	)
 
 # Live Reload

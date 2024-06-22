@@ -21,7 +21,7 @@ func main() {
 
 	classifyServerAddr := os.Getenv("CLASSIFY_SERVER_ADDR")
 	port := os.Getenv("PORT")
-	dburl := os.Getenv("DB_URL_POSTGRES")
+	dburl := os.Getenv("DB_URL")
 
 	if classifyServerAddr == "" {
 		log.Fatal("classifyServerAddr envvar empty")

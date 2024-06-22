@@ -7,21 +7,21 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ary82/balance/internal/classification"
 	"github.com/ary82/balance/internal/post"
+	"github.com/ary82/balance/proto"
 	"github.com/go-co-op/gocron/v2"
 )
 
 type cronService struct {
 	cronRepository  CronRepository
-	classifyService classification.ClassifyServiceClient
+	classifyService proto.ClassifyServiceClient
 	positiveSseCh   chan post.Post
 	negativeSseCh   chan post.Post
 }
 
 func NewCronService(
 	cronRepo CronRepository,
-	classifyService classification.ClassifyServiceClient,
+	classifyService proto.ClassifyServiceClient,
 	positiveSseCh chan post.Post,
 	negativeSseCh chan post.Post,
 ) CronService {
@@ -62,7 +62,6 @@ func (s *cronService) Start() error {
 }
 
 func (s *cronService) classifyJob() {
-	start := time.Now()
 	posts, err := s.cronRepository.SelectPosts(post.POST_MAPPING_NOT_ANALYSED)
 	if err != nil {
 		log.Println("err:", err)
@@ -70,7 +69,6 @@ func (s *cronService) classifyJob() {
 	}
 
 	if len(posts) == 0 {
-		log.Println("no posts to analyze")
 		return
 	}
 
@@ -83,7 +81,7 @@ func (s *cronService) classifyJob() {
 
 	res, err := s.classifyService.Classify(
 		context.Background(),
-		&classification.ClassifyRequest{
+		&proto.ClassifyRequest{
 			Query: strSlice,
 		},
 	)
@@ -113,7 +111,6 @@ func (s *cronService) classifyJob() {
 		log.Println("err:", err)
 		return
 	}
-	log.Println("completed, TOOK:", time.Since(start))
 }
 
 func (s *cronService) sseJob() {
