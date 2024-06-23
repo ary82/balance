@@ -22,6 +22,9 @@ const (
 	SELECT_RANDOM_POST_QUERY string = "SELECT id, body, author, type, created_at FROM submissions WHERE type = $1 ORDER BY RANDOM() LIMIT 1"
 )
 
-const ALLOWED_CHARS string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.'-_ !"
+const (
+	ALLOWED_CHARS string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.'-_ !"
+	RESERVED_NAME string = "ary82"
+)
 
 const SQLSTATE_ERR_NOT_UNIQUE string = "23505"

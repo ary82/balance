@@ -24,9 +24,6 @@ func (s *FiberServer) sse(c *fiber.Ctx) error {
 				negMsg := html.EscapeString(s.CurrentNegativePosts.Body)
 				negAuthor := html.EscapeString(s.CurrentNegativePosts.Author)
 
-				_ = posAuthor
-				_ = negAuthor
-
 				fmt.Fprintf(w,
 					"event: positive_body\ndata: %s\n\nevent: positive_author\ndata: %s\n\nevent: negative_body\ndata: %s\n\nevent: negative_author\ndata: %s\n\n",
 					posMsg, posAuthor,
@@ -35,7 +32,7 @@ func (s *FiberServer) sse(c *fiber.Ctx) error {
 
 				err := w.Flush()
 				if err != nil {
-					fmt.Printf("Error while flushing: %v. Closing http connection.\n", err)
+					fmt.Printf("%v. Closing http connection.\n", err)
 					break
 				}
 				time.Sleep(3 * time.Second)

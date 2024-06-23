@@ -36,6 +36,10 @@ func (s *postService) CreatePost(post *Post) error {
 		return fmt.Errorf("author name too short")
 	}
 
+	if strings.ReplaceAll(post.Author, " ", "") == RESERVED_NAME {
+		return fmt.Errorf("that's my name.")
+	}
+
 	for i, v := range post.Body {
 		if !strings.ContainsRune(ALLOWED_CHARS, v) {
 			return fmt.Errorf("body contains invalid characters at index: %d", i)
