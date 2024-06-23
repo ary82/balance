@@ -8,6 +8,7 @@ import (
 
 func Run(
 	dburl string,
+	mode string,
 	classifyServerAddr string,
 	port string,
 ) error {
@@ -19,7 +20,11 @@ func Run(
 	posSseCh := make(chan post.Post)
 	negSseCh := make(chan post.Post)
 
-	cron, err := NewCron(db, classifyServerAddr, posSseCh, negSseCh)
+	cron, err := NewCron(
+		db, mode,
+		classifyServerAddr,
+		posSseCh, negSseCh,
+	)
 	if err != nil {
 		return err
 	}

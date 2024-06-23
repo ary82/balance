@@ -10,5 +10,4 @@ COPY ./proto/classification_pb2_grpc.py .
 
 RUN pip install -r requirements.txt --no-cache-dir
 
-EXPOSE 8000
 CMD [ "python","./main.py" ]

@@ -33,7 +33,7 @@ func main() {
 		log.Fatal("dburl envvar empty")
 	}
 
-	err := infra.Run(dburl, classifyServerAddr, port)
+	err := infra.Run(dburl, mode, classifyServerAddr, port)
 	if err != nil {
 		log.Fatal(err)
 	}

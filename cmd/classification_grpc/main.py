@@ -15,10 +15,12 @@ import classification_pb2
 # Load envs in dev mode
 mode = os.getenv("MODE")
 if mode != "prod":
-    load_dotenv("../.env")
+    load_dotenv("./.env")
 
-port = os.getenv("PORT")
-addr = "[::]:" + port
+port = os.getenv("PORT") or ""
+if port == "" or port is None:
+    port = "8000"
+addr = "[::]:" + str(port)
 
 # Configure Gemini
 GOOGLE_API_KEY = os.getenv("GEMINI_KEY")
