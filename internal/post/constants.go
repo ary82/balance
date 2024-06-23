@@ -23,7 +23,7 @@ const (
 )
 
 const (
-	ALLOWED_CHARS string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.'-_ !"
+	ALLOWED_CHARS string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.'-_ !?()"
 	RESERVED_NAME string = "ary82"
 )
 

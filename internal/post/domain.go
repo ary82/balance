@@ -22,3 +22,8 @@ type Post struct {
 	Type      int       `json:"type"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type PostCounts struct {
+	Positive int
+	Negative int
+}

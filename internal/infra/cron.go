@@ -18,6 +18,7 @@ func NewCron(
 	classifyServerAddr string,
 	posSseCh chan post.Post,
 	negSseCh chan post.Post,
+	countSseCh chan post.PostCounts,
 ) (cron.CronService, error) {
 	repo := cron.NewCronRepository(db)
 
@@ -39,6 +40,6 @@ func NewCron(
 
 	classifyService := proto.NewClassifyServiceClient(client)
 
-	service := cron.NewCronService(repo, classifyService, posSseCh, negSseCh)
+	service := cron.NewCronService(repo, classifyService, posSseCh, negSseCh, countSseCh)
 	return service, nil
 }

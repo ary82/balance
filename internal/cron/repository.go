@@ -76,3 +76,9 @@ func (r *cronSQLRepository) SelectRandomPost(postType int) (*post.Post, error) {
 	}
 	return post, nil
 }
+
+func (r *cronSQLRepository) CountPosts(postType int) (int, error) {
+	var count int
+	err := r.db.QueryRow(COUNT_POSTS_QUERY, postType).Scan(&count)
+	return count, err
+}

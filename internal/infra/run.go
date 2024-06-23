@@ -19,19 +19,21 @@ func Run(
 
 	posSseCh := make(chan post.Post)
 	negSseCh := make(chan post.Post)
+	countSseCh := make(chan post.PostCounts)
 
 	cron, err := NewCron(
 		db, mode,
 		classifyServerAddr,
-		posSseCh, negSseCh,
+		posSseCh, negSseCh, countSseCh,
 	)
 	if err != nil {
 		return err
 	}
 
 	server := NewFiberServer(db)
-	go readCh(posSseCh, server.CurrentPositivePosts)
-	go readCh(negSseCh, server.CurrentNegativePosts)
+	go readPostCh(posSseCh, &server.CurrentPositivePosts)
+	go readPostCh(negSseCh, &server.CurrentNegativePosts)
+	go readCountCh(countSseCh, &server.PostsCount)
 
 	err = cron.Start()
 	if err != nil {
@@ -42,8 +44,14 @@ func Run(
 	return err
 }
 
-func readCh(sseCh chan post.Post, post *post.Post) {
+func readPostCh(sseCh chan post.Post, post *post.Post) {
 	for {
 		*post = (<-sseCh)
+	}
+}
+
+func readCountCh(countCh chan post.PostCounts, count *post.PostCounts) {
+	for {
+		*count = (<-countCh)
 	}
 }

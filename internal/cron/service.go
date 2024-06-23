@@ -17,6 +17,7 @@ type cronService struct {
 	classifyService proto.ClassifyServiceClient
 	positiveSseCh   chan post.Post
 	negativeSseCh   chan post.Post
+	countSseCh      chan post.PostCounts
 }
 
 func NewCronService(
@@ -24,12 +25,14 @@ func NewCronService(
 	classifyService proto.ClassifyServiceClient,
 	positiveSseCh chan post.Post,
 	negativeSseCh chan post.Post,
+	countSseCh chan post.PostCounts,
 ) CronService {
 	return &cronService{
 		cronRepository:  cronRepo,
 		classifyService: classifyService,
 		positiveSseCh:   positiveSseCh,
 		negativeSseCh:   negativeSseCh,
+		countSseCh:      countSseCh,
 	}
 }
 
@@ -49,7 +52,7 @@ func (s *cronService) Start() error {
 	}
 
 	_, err = scheduler.NewJob(
-		gocron.DurationJob(10*time.Second),
+		gocron.DurationJob(8*time.Second),
 		gocron.NewTask(s.sseJob),
 		gocron.WithSingletonMode(gocron.LimitModeReschedule),
 	)
@@ -124,7 +127,18 @@ func (s *cronService) sseJob() {
 		log.Println("err:", err)
 		return
 	}
+	goodCount, err := s.cronRepository.CountPosts(post.POST_MAPPING_POSITIVE)
+	if err != nil {
+		log.Println("err:", err)
+		return
+	}
+	badCount, err := s.cronRepository.CountPosts(post.POST_MAPPING_NEGATIVE)
+	if err != nil {
+		log.Println("err:", err)
+		return
+	}
 
 	s.positiveSseCh <- *goodPost
 	s.negativeSseCh <- *badPost
+	s.countSseCh <- post.PostCounts{Positive: goodCount, Negative: badCount}
 }

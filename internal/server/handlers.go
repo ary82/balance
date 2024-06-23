@@ -25,9 +25,10 @@ func (s *FiberServer) sse(c *fiber.Ctx) error {
 				negAuthor := html.EscapeString(s.CurrentNegativePosts.Author)
 
 				fmt.Fprintf(w,
-					"event: positive_body\ndata: %s\n\nevent: positive_author\ndata: %s\n\nevent: negative_body\ndata: %s\n\nevent: negative_author\ndata: %s\n\n",
+					"event: p_b\ndata: %s\n\nevent: p_a\ndata: %s\n\nevent: n_b\ndata: %s\n\nevent: n_a\ndata: %s\n\nevent: p_c\ndata: %d\n\nevent: n_c\ndata: %d\n\n",
 					posMsg, posAuthor,
 					negMsg, negAuthor,
+					s.PostsCount.Positive, s.PostsCount.Negative,
 				)
 
 				err := w.Flush()

@@ -6,8 +6,9 @@ import (
 )
 
 type FiberServer struct {
-	CurrentPositivePosts *post.Post
-	CurrentNegativePosts *post.Post
+	CurrentPositivePosts post.Post
+	CurrentNegativePosts post.Post
+	PostsCount           post.PostCounts
 	App                  *fiber.App
 	postService          post.PostService
 }
@@ -17,8 +18,9 @@ func CreateFiberServer(
 	postService post.PostService,
 ) *FiberServer {
 	s := &FiberServer{
-		CurrentPositivePosts: &post.Post{},
-		CurrentNegativePosts: &post.Post{},
+		CurrentPositivePosts: post.Post{},
+		CurrentNegativePosts: post.Post{},
+		PostsCount:           post.PostCounts{},
 		App:                  app,
 		postService:          postService,
 	}
