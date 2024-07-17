@@ -8,3 +8,7 @@ CREATE TABLE IF NOT EXISTS submissions(
 
 CREATE INDEX submissions_type
 ON submissions (type); 
+
+ALTER TABLE submissions
+ADD CONSTRAINT unique_body_author
+UNIQUE (body,author);
